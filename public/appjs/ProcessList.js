@@ -1,16 +1,16 @@
 App.ProcessList = Backbone.Collection.extend({
-    model: App.Process,
+	model: App.Process,
 
-    url: '/processes',
+	url: '/processes',
 
-    comparator: function(process) {
-      return process.get('file');
-    },
+	comparator: function(process) {
+		return process.get('file');
+	},
 
-    getByPID: function(pid) {
-      // this.detect == find
-      return this.detect(function(process) {
-          return process.get('pid') == pid;
-      });
-    }
+	getByPID: function(pid) {
+		// this.detect == find
+		return this.detect(function(process) {
+			return process.get('pid') == pid;
+		});
+	}
 });

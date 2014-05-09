@@ -1,137 +1,137 @@
 App.ProcessView = Backbone.View.extend({
-  // Will contain the process view item
-  tagName: "div",
-  className: "row",
+	// Will contain the process view item
+	tagName: "div",
+	className: "row",
 
-  // Cache the template
-  tmpl: $('#process-tmpl').html(),
+	// Cache the template
+	tmpl: $('#process-tmpl').html(),
 
-  tmplInfo: $('#tplInfo'),
+	tmplInfo: $('#tplInfo'),
 
 
-  // DOM Event specific to an item
-  events: {
-    "click .info":      "info",
-    "click .update":    "update",
-    "click .restart":   "restart",
-    "click .stop":      "stop"
-  },
+	// DOM Event specific to an item
+	events: {
+		"click .info":      "info",
+		"click .update":    "update",
+		"click .restart":   "restart",
+		"click .stop":      "stop"
+	},
 
-  // Le render est appelé par
-  initialize: function() {
-    this.model.bind('destroy', this.remove, this);
-  },
+	// Le render est appelé par
+	initialize: function() {
+		this.model.bind('destroy', this.remove, this);
+	},
 
-  // Re-render the content of the process item
-  render: function() {
-    $(this.el).html(Mustache.to_html(this.tmpl, this.model.toJSON()));
-    return this;
-  },
+	// Re-render the content of the process item
+	render: function() {
+		$(this.el).html(Mustache.to_html(this.tmpl, this.model.toJSON()));
+		return this;
+	},
 
-  info: function(e){
-    if(e) e.preventDefault();
-    var $row = $(this.el);
+	info: function(e){
+		if(e) e.preventDefault();
+		var $row = $(this.el);
 
-    $row.addClass('load');
+		$row.addClass('load');
 
-    // Get process info
-    this.model.info(function(infos){
+		// Get process info
+		this.model.info(function(infos){
 
-      // Show process info
-      this._showInfo($row, infos);
+			// Show process info
+			this._showInfo($row, infos);
 
-      $row.removeClass('load');
+			$row.removeClass('load');
 
-    }.bind(this));
-  },
+		}.bind(this));
+	},
 
-  update: function(e){
-    if(e) e.preventDefault();
-    var $row = $(this.el);
+	update: function(e){
+		if(e) e.preventDefault();
+		var $row = $(this.el);
 
-    $row.addClass('load');
+		$row.addClass('load');
 
-    this.model.update(function(result){
+		this.model.update(function(result){
 
-      console.log(result);
-      $row.removeClass('load');
+			console.log(result);
+			$row.removeClass('load');
 
-    }.bind(this));
-  },
+		}.bind(this));
+	},
 
-  restart: function(e){
-    if(e) e.preventDefault();
-    var $row = $(this.el);
+	restart: function(e){
+		if(e) e.preventDefault();
+		var $row = $(this.el);
 
-    $row.addClass('load');
+		$row.addClass('load');
 
-    this.model.restart(function(result){
-      $row.removeClass('load');
-      _.delay(this.model.collection.fetch.bind(this.model.collection), 1000);
-    }.bind(this));
-  },
+		this.model.restart(function(result){
+			$row.removeClass('load');
+			_.delay(this.model.collection.fetch.bind(this.model.collection), 1000);
+		}.bind(this));
+	},
 
-  stop: function(e){
-    if(e) e.preventDefault();
-    var $row = $(this.el);
+	stop: function(e){
+		if(e) e.preventDefault();
+		var $row = $(this.el);
 
-    $row.addClass('load');
+		$row.addClass('load');
 
-    this.model.stop(function(result){
-      $row.removeClass('load');
-      _.delay(this.model.collection.fetch.bind(this.model.collection), 1000);
-    }.bind(this));
+		this.model.stop(function(result){
+			$row.removeClass('load');
+			_.delay(this.model.collection.fetch.bind(this.model.collection), 1000);
+		}.bind(this));
 
-  },
+	},
 
-  remove: function(){
-    $(this.el).remove();
-  },
+	remove: function(){
+		$(this.el).remove();
+	},
 
-  // Helpers
+	// Helpers
 
-  _formatInfo: function(results){
+	_formatInfo: function(results){
 
-    if(results.status == 'error'){
-      return $('<strong>'+results.details+'</strong>');
-    }
+		if(results.status == 'error'){
+			return $('<strong>'+results.details+'</strong>');
+		}
 
-    var $div = $('<div/>');
+		var $div = $('<div/>');
 
-    results.details.forEach(function(log){
-      var formatterLog = '';
-      $div.append(log[0]);
-      for (var i=0, end=log[1].length; i<end; i++) {
-        formatterLog += "<span class='ansi-"+log[1][i].foreground+"'>"+log[1][i].text+"</span>";
-      }
-      $div.append('<pre class="prettyprint">'+formatterLog+'</pre>');
-    });
+		results.details.forEach(function(log){
+			var formatterLog = '';
+			$div.append(log[0]);
+			for (var i=0, end=log[1].length; i<end; i++) {
+				formatterLog += "<span class='ansi-"+log[1][i].foreground+"'>"+log[1][i].text+"</span>";
+			}
+			$div.append('<pre class="prettyprint">'+formatterLog+'</pre>');
+		});
 
-    return $div;
-  },
+		return $div;
+	},
 
-  _showInfo: function($row, results){
-    // Add
-    var $next = $row.next();
+	_showInfo: function($row, results){
+		// Add
+		var $next = $row.next();
 
-    if($next.length == 0 || $next.is('.row')){
-      $next = this.tmplInfo
-        .clone()
-        .removeClass('hidden')
-        .insertAfter($row)
-        .alert();
-    }
+		if($next.length == 0 || $next.is('.row')){
+			$next = this.tmplInfo
+				.clone()
+				.removeClass('hidden')
+				.insertAfter($row)
+				.alert();
+		}
 
-    if(results.status == 'error'){
-      $next.removeClass('info').addClass('error');
-    }
+		if(results.status == 'error'){
+			$next.removeClass('info').addClass('error');
+		}
 
-    $next
-      .find('.alert-message-content')
-        .html(this._formatInfo(results))
-        .find('pre')
-          .each(function(){
-            this.scrollTop=900000;
-          });
-  }
+		$next
+			.find('.alert-message-content')
+			.html(this._formatInfo(results))
+			.find('pre')
+			.each(function(){
+				this.scrollTop=900000;
+			});
+	}
 });
