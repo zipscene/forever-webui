@@ -1,6 +1,6 @@
 (function() {
   var HEADER, UI, ansiparse, app, async, ejs,
-  express, forever, foreverUI, fs, _, pkg, spawn,
+  express, forever, foreverUI, fs, _, pkg, child_process,
   passport, LocalStrategy, utils, log;
   express = require('express');
   async = require('async');
@@ -12,7 +12,7 @@
   pkg = require('./package.json');
   utils = require("./utils/utils");
   log = require("./utils/logger");
-  spawn = require('child_process').spawn;
+  child_process = require('child_process');
   passport = require('passport');
   LocalStrategy = require('passport-local').Strategy;
 
@@ -67,6 +67,20 @@
       });
     };
 
+    foreverUI.prototype.pull = function(uid, cb) {
+      return this.findProcessByUID(uid, function(err, proc) {
+        if (err) return cb(err, null);
+        var path = proc.file.substring(0, proc.file.lastIndexOf("/") + 1),
+        var pull = child_process.exec('git pull', {
+          cwd: path
+        }, function(error, stdout, stderr) {
+          if (error) return cb(error, null);
+          console.log(stdout);
+          return cb(null, stdout);
+        });
+      });
+    };
+
     foreverUI.prototype.stop = function(uid, cb) {
       return this.findProcIndexByUID(uid, function(err, index) {
         if (err) return cb(err, null);
@@ -93,7 +107,7 @@
       var startScriptParams = new Array();
       startScriptParams = decodeURIComponent(options).split(" ");
       Array.prototype.unshift.apply(startScriptParams, ["start"]);
-      child = spawn("forever", startScriptParams);
+      child = child_process.spawn("forever", startScriptParams);
       child.unref();
       return cb(null, this.child);
     };
@@ -245,6 +259,22 @@
 
   app.get('/info/:uid', ensureAuthenticated, function(req, res) {
     return UI.info(req.params.uid, function(err, results) {
+      if (err) {
+        return res.send(JSON.stringify({
+          status: 'error',
+          details: err
+        }), HEADER, 500);
+      } else {
+        return res.send(JSON.stringify({
+          status: 'success',
+          details: results
+        }), HEADER, 200);
+      }
+    });
+  });
+
+  app.get('/pull/:uid', ensureAuthenticated, function(req, res) {
+    return UI.pull(req.params.uid, function(err, results) {
       if (err) {
         return res.send(JSON.stringify({
           status: 'error',
