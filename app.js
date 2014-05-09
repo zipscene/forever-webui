@@ -74,56 +74,40 @@
 
 				// git: git pull if git repo
 				function git (cb) {
-					if (!fs.existsSync(path + '.git')) {
-						console.log("Not a git repo");
-						return cb(null, false);
-					}
+					if (!fs.existsSync(path + '.git')) return cb(null, false);
 
 					child_process.exec('git pull', {
 						cwd: path
 					}, function(error, stdout, stderr) {
 						if (error) return cb(error, null);
-						console.log("----git pull-----");
-						console.log(stdout);
-						return cb(null, stdout);
+						return cb(null, true);
 					});
 				}
 
 				// npm: npm install if package.json is found
 				function npm (cb) {
-					if (!fs.existsSync(path + 'package.json')) {
-						console.log("npm not found");
-						return cb(null, false);
-					}
+					if (!fs.existsSync(path + 'package.json')) return cb(null, false);
 
 					child_process.exec('npm install', {
 						cwd: path
 					}, function(error, stdout, stderr) {
 						if (error) return cb(error, null);
-						console.log("----npm install-----");
-						console.log(stdout);
-						return cb(null, stdout);
+						return cb(null, true);
 					});
 				}
 
 				// bower: bower install if bower.json is found
 				function bower (cb) {
-					if (!fs.existsSync(path + 'bower.json')) {
-						console.log("bower not found");
-						return cb(null, false);
-					}
+					if (!fs.existsSync(path + 'bower.json')) return cb(null, false);
 
 					child_process.exec('bower install', {
 						cwd: path
 					}, function(error, stdout, stderr) {
 						if (error) return cb(error, null);
-						console.log("----bower install-----");
-						console.log(stdout);
-						return cb(null, stdout);
+						return cb(null, true);
 					});
 				}
 
-				console.log("something");
 				async.series([
 					git,
 					npm,
