@@ -12,6 +12,7 @@ App.ProcessView = Backbone.View.extend({
   // DOM Event specific to an item
   events: {
     "click .info":      "info",
+    "click .pull":      "pull",
     "click .restart":   "restart",
     "click .stop":      "stop"
   },
@@ -28,10 +29,7 @@ App.ProcessView = Backbone.View.extend({
   },
 
   info: function(e){
-    if(e){
-      e.preventDefault()
-    }
-
+    if(e) e.preventDefault();
     var $row = $(this.el);
 
     $row.addClass('load');
@@ -47,11 +45,22 @@ App.ProcessView = Backbone.View.extend({
     }.bind(this));
   },
 
-  restart: function(e){
-    if(e){
-      e.preventDefault()
-    }
+  pull: function(e){
+    if(e) e.preventDefault()
+    var $row = $(this.el);
 
+    $row.addClass('load');
+
+    this.model.pull(function(result){
+
+      console.log(result);
+      $row.removeClass('load');
+
+    }.bind(this));
+  },
+
+  restart: function(e){
+    if(e) e.preventDefault();
     var $row = $(this.el);
 
     $row.addClass('load');
@@ -63,10 +72,7 @@ App.ProcessView = Backbone.View.extend({
   },
 
   stop: function(e){
-    if(e){
-      e.preventDefault()
-    }
-
+    if(e) e.preventDefault();
     var $row = $(this.el);
 
     $row.addClass('load');
@@ -97,7 +103,7 @@ App.ProcessView = Backbone.View.extend({
       $div.append(log[0]);
       for (var i=0, end=log[1].length; i<end; i++) {
         formatterLog += "<span class='ansi-"+log[1][i].foreground+"'>"+log[1][i].text+"</span>";
-      }      
+      }
       $div.append('<pre class="prettyprint">'+formatterLog+'</pre>');
     });
 
@@ -115,7 +121,7 @@ App.ProcessView = Backbone.View.extend({
         .insertAfter($row)
         .alert();
     }
-    
+
     if(results.status == 'error'){
       $next.removeClass('info').addClass('error');
     }

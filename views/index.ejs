@@ -2,14 +2,14 @@
 <html>
 <head>
   <title>Forever Web UI v</title>
-  <link rel="stylesheet" href="/dist/foreverui.min.css" /> 
+  <link rel="stylesheet" href="/dist/foreverui.min.css" />
 </head>
     <body>
         <div class="container">
             <div class="hero-unit">
                 <h1>Forever Web UI <small>beta</small></h1>
                 <p>Simple web UI for efficient nodejs administration</p>
-                <div class="menubar left">Process count 
+                <div class="menubar left">Process count
                     <span id="process-count">0</span>
                 </div>
                 <div class="menubar center">
@@ -44,6 +44,7 @@
 
             <div class="span5">
               <a class="btn info" href="/info/{{uid}}">Info</a>
+              <a class="btn success pull" href="/pull/{{uid}}">pull</a>
               <a class="btn primary restart" href="/restart/{{uid}}">Restart</a>
               <a class="btn danger stop" href="/stop/{{uid}}">Stop</a>
             </div>

@@ -19,9 +19,9 @@ App.Process = Backbone.Model.extend({
 
     initialize: function(process, collection) {
         this.attributes.time = prettyDate(process.ctime);
-        
+
         // Build fetch function
-        _.each(['info','stop','restart'], this._makeMethod, this);
+        _.each(['info', 'pull', 'stop','restart'], this._makeMethod, this);
     },
 
     _makeMethod: function(method){
@@ -30,6 +30,6 @@ App.Process = Backbone.Model.extend({
         .complete(function(data){
             cb(JSON.parse(data.responseText));
         });
-      }
+      };
     }
 });
