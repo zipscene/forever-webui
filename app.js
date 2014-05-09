@@ -139,7 +139,7 @@
 		};
 
 		foreverUI.prototype.start = function(options, cb) {
-			var startScriptParams = new Array();
+			var startScriptParams = [];
 			startScriptParams = decodeURIComponent(options).split(" ");
 			Array.prototype.unshift.apply(startScriptParams, ["start"]);
 			child = child_process.spawn("forever", startScriptParams);
@@ -169,7 +169,7 @@
 		} else {
 			fn(new Error('User ' + id + ' does not exist'));
 		}
-	};
+	}
 
 	function findByUsername(username, fn) {
 		for (var i = 0, len = users.length; i < len; i++) {
@@ -179,7 +179,7 @@
 			}
 		}
 		return fn(null, null);
-	};
+	}
 
 	passport.serializeUser(function(user, done) {
 		done(null, user.id);
@@ -199,7 +199,7 @@
 					if (!user) { return done(null, false, { message: 'Unknown user ' + username }); }
 					if (user.password != password) { return done(null, false, { message: 'Invalid password' }); }
 					return done(null, user);
-				})
+				});
 			});
 		}
 	));
@@ -364,7 +364,7 @@
 			return next();
 		} else {
 			res.render('login.ejs');
-		};
+		}
 	}
 
 	app.listen(8085);
