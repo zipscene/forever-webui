@@ -155,10 +155,12 @@
 		'Content-Type': 'text/javascript'
 	};
 
-	var users = [
+	/*var users = [
 			{ id: 1, username: 'joe', password: 'secret', email: 'joe@console.com' },
 			{ id: 2, username: 'bob', password: 'birthday', email: 'bob@console.com' }
-	];
+	];*/
+	// create a 'users.js' file that exports an array matching the above array structure
+	var users = require('./users');
 
 	function findById(id, fn) {
 		var idx = id - 1;
