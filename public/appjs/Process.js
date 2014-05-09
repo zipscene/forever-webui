@@ -21,7 +21,7 @@ App.Process = Backbone.Model.extend({
         this.attributes.time = prettyDate(process.ctime);
 
         // Build fetch function
-        _.each(['info', 'pull', 'stop','restart'], this._makeMethod, this);
+        _.each(['info', 'update', 'stop','restart'], this._makeMethod, this);
     },
 
     _makeMethod: function(method){

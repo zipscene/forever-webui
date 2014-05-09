@@ -12,7 +12,7 @@ App.ProcessView = Backbone.View.extend({
   // DOM Event specific to an item
   events: {
     "click .info":      "info",
-    "click .pull":      "pull",
+    "click .update":    "update",
     "click .restart":   "restart",
     "click .stop":      "stop"
   },
@@ -45,13 +45,13 @@ App.ProcessView = Backbone.View.extend({
     }.bind(this));
   },
 
-  pull: function(e){
-    if(e) e.preventDefault()
+  update: function(e){
+    if(e) e.preventDefault();
     var $row = $(this.el);
 
     $row.addClass('load');
 
-    this.model.pull(function(result){
+    this.model.update(function(result){
 
       console.log(result);
       $row.removeClass('load');

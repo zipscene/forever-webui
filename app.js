@@ -67,17 +67,68 @@
       });
     };
 
-    foreverUI.prototype.pull = function(uid, cb) {
+    foreverUI.prototype.update = function(uid, cb) {
       return this.findProcessByUID(uid, function(err, proc) {
         if (err) return cb(err, null);
-        var path = proc.file.substring(0, proc.file.lastIndexOf("/") + 1),
-        var pull = child_process.exec('git pull', {
-          cwd: path
-        }, function(error, stdout, stderr) {
-          if (error) return cb(error, null);
-          console.log(stdout);
-          return cb(null, stdout);
-        });
+        var path = proc.file.substring(0, proc.file.lastIndexOf("/") + 1);
+
+        // git: git pull if git repo
+        function git (cb) {
+          if (!fs.existsSync(path + '.git')) {
+            console.log("Not a git repo");
+            return cb(null, false);
+          }
+
+          child_process.exec('git pull', {
+            cwd: path
+          }, function(error, stdout, stderr) {
+            if (error) return cb(error, null);
+            console.log("----git pull-----");
+            console.log(stdout);
+            return cb(null, stdout);
+          });
+        }
+
+        // npm: npm install if package.json is found
+        function npm (cb) {
+          if (!fs.existsSync(path + 'package.json')) {
+            console.log("npm not found");
+            return cb(null, false);
+          }
+
+          child_process.exec('npm install', {
+            cwd: path
+          }, function(error, stdout, stderr) {
+            if (error) return cb(error, null);
+            console.log("----npm install-----");
+            console.log(stdout);
+            return cb(null, stdout);
+          });
+        }
+
+        // bower: bower install if bower.json is found
+        function bower (cb) {
+          if (!fs.existsSync(path + 'bower.json')) {
+            console.log("bower not found");
+            return cb(null, false);
+          }
+
+          child_process.exec('bower install', {
+            cwd: path
+          }, function(error, stdout, stderr) {
+            if (error) return cb(error, null);
+            console.log("----bower install-----");
+            console.log(stdout);
+            return cb(null, stdout);
+          });
+        }
+
+        console.log("something");
+        async.series([
+          git,
+          npm,
+          bower
+        ], cb);
       });
     };
 
@@ -273,8 +324,8 @@
     });
   });
 
-  app.get('/pull/:uid', ensureAuthenticated, function(req, res) {
-    return UI.pull(req.params.uid, function(err, results) {
+  app.get('/update/:uid', ensureAuthenticated, function(req, res) {
+    return UI.update(req.params.uid, function(err, results) {
       if (err) {
         return res.send(JSON.stringify({
           status: 'error',
