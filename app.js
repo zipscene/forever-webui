@@ -70,49 +70,40 @@
 		foreverUI.prototype.update = function(uid, cb) {
 			return this.findProcessByUID(uid, function(err, proc) {
 				if (err) return cb(err, null);
+
+				// cwd for commands to execute
 				var path = proc.file.substring(0, proc.file.lastIndexOf("/") + 1);
 
-				// git: git pull if git repo
-				function git (cb) {
-					if (!fs.existsSync(path + '.git')) return cb(null, false);
+				// command list with file dependency for command to be executed
+				var commands = [{
+					id: 'git',
+					dependency: '.git',
+					command: 'git pull'
+				}, {
+					id: 'npm',
+					dependency: 'package.json',
+					command: 'npm install'
+				}, {
+					id: 'bower',
+					dependency: 'bower.json',
+					command: 'bower install'
+				}];
 
-					child_process.exec('git pull', {
-						cwd: path
-					}, function(error, stdout, stderr) {
-						if (error) return cb(error, null);
-						return cb(null, true);
-					});
-				}
+				// map commands to functions for asyc
+				var commandFuncs = _.map(commands, function(command) {
+					return function(cb) {
+						if (!fs.existsSync(path + command.dependency)) return cb(null, false);
 
-				// npm: npm install if package.json is found
-				function npm (cb) {
-					if (!fs.existsSync(path + 'package.json')) return cb(null, false);
+						child_process.exec(command.command, {
+							cwd: path
+						}, function(error, stdout, stderr) {
+							if (error) return cb(error, null);
+							return cb(null, true);
+						});
+					}
+				});
 
-					child_process.exec('npm install', {
-						cwd: path
-					}, function(error, stdout, stderr) {
-						if (error) return cb(error, null);
-						return cb(null, true);
-					});
-				}
-
-				// bower: bower install if bower.json is found
-				function bower (cb) {
-					if (!fs.existsSync(path + 'bower.json')) return cb(null, false);
-
-					child_process.exec('bower install', {
-						cwd: path
-					}, function(error, stdout, stderr) {
-						if (error) return cb(error, null);
-						return cb(null, true);
-					});
-				}
-
-				async.series([
-					git,
-					npm,
-					bower
-				], cb);
+				async.series(commandFuncs, cb);
 			});
 		};
 
