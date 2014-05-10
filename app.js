@@ -232,6 +232,22 @@
 		layout: false
 	});
 
+	function commonResponse (req, res) {
+		return function(err, results) {
+			if (err) {
+				return res.send(JSON.stringify({
+					status: 'error',
+					details: err
+				}), HEADER, 500);
+			} else {
+				return res.send(JSON.stringify({
+					status: 'success',
+					details: results
+				}), HEADER, 200);
+			}
+		};
+	}
+
 	app.get('/console', ensureAuthenticated, function(req, res) {
 		return forever.list("", function(err, results) {
 			return res.render('index.ejs', {
@@ -254,83 +270,23 @@
 	});
 
 	app.get('/restart/:uid', ensureAuthenticated, function(req, res) {
-		return UI.restart(req.params.uid, function(err, results) {
-			if (err) {
-				return res.send(JSON.stringify({
-					status: 'error',
-					details: err
-				}), HEADER, 500);
-			} else {
-				return res.send(JSON.stringify({
-					status: 'success',
-					details: results
-				}), HEADER, 200);
-			}
-		});
+		return UI.restart(req.params.uid, commonResponse(req, res));
 	});
 
 	app.get('/stop/:uid', ensureAuthenticated, function(req, res) {
-		return UI.stop(req.params.uid, function(err, results) {
-			if (err) {
-				return res.send(JSON.stringify({
-					status: 'error',
-					details: err
-				}), HEADER, 500);
-			} else {
-				return res.send(JSON.stringify({
-					status: 'success',
-					details: results
-				}), HEADER, 200);
-			}
-		});
+		return UI.stop(req.params.uid, commonResponse(req, res));
 	});
 
 	app.get('/info/:uid', ensureAuthenticated, function(req, res) {
-		return UI.info(req.params.uid, function(err, results) {
-			if (err) {
-				return res.send(JSON.stringify({
-					status: 'error',
-					details: err
-				}), HEADER, 500);
-			} else {
-				return res.send(JSON.stringify({
-					status: 'success',
-					details: results
-				}), HEADER, 200);
-			}
-		});
+		return UI.info(req.params.uid, commonResponse(req, res));
 	});
 
 	app.get('/update/:uid', ensureAuthenticated, function(req, res) {
-		return UI.update(req.params.uid, function(err, results) {
-			if (err) {
-				return res.send(JSON.stringify({
-					status: 'error',
-					details: err
-				}), HEADER, 500);
-			} else {
-				return res.send(JSON.stringify({
-					status: 'success',
-					details: results
-				}), HEADER, 200);
-			}
-		});
+		return UI.update(req.params.uid, commonResponse(req, res));
 	});
 
 	app.post('/addProcess', ensureAuthenticated, function(req, res) {
-		return UI.start(req.body.args, function(err, results) {
-			if (err) {
-				return res.send(JSON.stringify({
-					status: 'error',
-					details: err
-				}), HEADER, 500);
-			} else {
-				return res.send(JSON.stringify({
-					status: 'success',
-					details: results
-				}), HEADER, 200);
-			}
-		});
+		return UI.start(req.body.args, commonResponse(req, res));
 	});
 
 	app.get('/', ensureAuthenticated, function(req, res) {
