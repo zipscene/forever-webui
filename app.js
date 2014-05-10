@@ -147,8 +147,8 @@
 	};
 
 	/*var users = [
-			{ id: 1, username: 'joe', password: 'secret', email: 'joe@console.com' },
-			{ id: 2, username: 'bob', password: 'birthday', email: 'bob@console.com' }
+		{ id: 1, username: 'joe', password: 'secret', email: 'joe@console.com' },
+		{ id: 2, username: 'bob', password: 'birthday', email: 'bob@console.com' }
 	];*/
 	// create a 'users.js' file that exports an array matching the above array structure
 	var users = require('./users');
@@ -294,8 +294,9 @@
 	});
 
 	app.post('/login', passport.authenticate('local', {
-				successRedirect: '/console',
-				failureRedirect: '/' }));
+		successRedirect: '/console',
+		failureRedirect: '/'
+	}));
 
 	app.get('/logout', function(req, res){
 		req.logout();
@@ -303,7 +304,7 @@
 	});
 
 	app.get('*', ensureAuthenticated, function(req, res) {
-			return res.redirect('/console');
+		return res.redirect('/console');
 	});
 
 	function ensureAuthenticated(req, res, next) {
